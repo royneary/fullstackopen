@@ -10,3 +10,5 @@ This is the solution to the following exercises of the Full Stack open course:
 - [Exercises 3.15 - 3.18](https://fullstackopen.com/en/part3/saving_data_to_mongo_db#exercises-3-15-3-18)
 - [Exercises 3.19 - 3.21](https://fullstackopen.com/en/part3/validation_and_es_lint#exercises-3-19-3-21)
 - [Exercise 3.22](https://fullstackopen.com/en/part3/validation_and_es_lint#exercise-3-22)
+
+The phonebook application is reachable at https://phonebook.nerdsoli.de
