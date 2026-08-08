@@ -31,7 +31,7 @@ const showPersons = (password) => {
 const savePerson = (password, name, number) => {
   connect(password);
   const person = new Person({ name, number });
-  person.save().then((_result) => {
+  person.save().then(() => {
     console.log("person saved!");
     mongoose.connection.close();
   });
