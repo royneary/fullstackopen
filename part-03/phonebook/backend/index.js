@@ -57,7 +57,7 @@ app.delete("/api/persons/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
   const body = request.body;
 
   if (!body.name) {
@@ -71,9 +71,12 @@ app.post("/api/persons", (request, response) => {
     name: body.name,
     number: body.number,
   });
-  person.save().then((returnedPerson) => {
-    response.json(returnedPerson);
-  });
+  person
+    .save()
+    .then((returnedPerson) => {
+      response.json(returnedPerson);
+    })
+    .catch((error) => next(error));
 });
 
 app.put("/api/persons/:id", (request, response, next) => {
@@ -99,6 +102,8 @@ const errorHandler = (error, _request, response, next) => {
 
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformed id" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).send({ error: error.message });
   }
 
   next(error);

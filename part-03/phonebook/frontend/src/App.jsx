@@ -55,6 +55,11 @@ const App = () => {
             setNewName("");
             setNewNumber("");
             showInfo(`Updated ${returnedPerson.name}`);
+          })
+          .catch((error) => {
+            const message = error.response.data.error;
+            console.log(message);
+            setNotification({ className: "error", message });
           });
       }
       return;
@@ -62,12 +67,19 @@ const App = () => {
 
     // person does not exist yet
     const newPerson = { name: newName, number: newNumber };
-    personService.create(newPerson).then((returnedPerson) => {
-      setPersons(persons.concat(returnedPerson));
-      setNewName("");
-      setNewNumber("");
-      showInfo(`Added ${returnedPerson.name}`);
-    });
+    personService
+      .create(newPerson)
+      .then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
+        setNewName("");
+        setNewNumber("");
+        showInfo(`Added ${returnedPerson.name}`);
+      })
+      .catch((error) => {
+        const message = error.response.data.error;
+        console.log(message);
+        setNotification({ className: "error", message });
+      });
   };
 
   const clickedDelete = (person) => {
