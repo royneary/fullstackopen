@@ -11,6 +11,15 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).json({ error: error.message });
   }
 
+  if (
+    error.name === "MongoServerError" &&
+    error.message.startsWith("E11000 duplicate key error")
+  ) {
+    return response
+      .status(400)
+      .json({ error: "field `username` must be unique" });
+  }
+
   next(error);
 };
 
