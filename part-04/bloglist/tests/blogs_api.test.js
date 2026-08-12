@@ -5,13 +5,25 @@ const mongoose = require("mongoose");
 const app = require("../app");
 const helper = require("./test_helper");
 const Blog = require("../models/blog");
+const User = require("../models/user");
 
 const api = supertest(app);
+let authToken = null;
 
 describe("With some initial blogs in the database", () => {
   beforeEach(async () => {
+    await User.deleteMany({});
     await Blog.deleteMany({});
-    await Blog.insertMany(helper.initialBlogs);
+
+    const user = new User(helper.initialDbUser);
+    await user.save();
+
+    await Blog.insertMany(
+      helper.initialBlogs.map((b) => ({ ...b, user: user._id })),
+    );
+
+    const response = await api.post("/api/login").send(helper.initialUser);
+    authToken = `Bearer ${response.body.token}`;
   });
 
   test("all blogs are returned as json", async () => {
@@ -44,6 +56,7 @@ describe("With some initial blogs in the database", () => {
       };
       const response = await api
         .post("/api/blogs")
+        .set("Authorization", authToken)
         .send(newBlog)
         .expect(201)
         .expect("Content-Type", /^application\/json/);
@@ -63,6 +76,22 @@ describe("With some initial blogs in the database", () => {
       assert.strictEqual(newBlogInDb.likes, newBlog.likes);
     });
 
+    test("fails with status code 401 without auth token", async () => {
+      const newBlog = {
+        title: "Learning full-stack web development",
+        author: "Christian Ulrich",
+        url: "https://christian.nerdsoli.de/learning-full-stack-web-dev",
+        likes: 0,
+      };
+      const response = await api
+        .post("/api/blogs")
+        .send(newBlog)
+        .expect(401)
+        .expect("Content-Type", /^application\/json/);
+
+      assert.strictEqual(response.body.error, "token invalid");
+    });
+
     test("works without likes, assigning default value 0", async () => {
       const newBlog = {
         title: "Learning full-stack web development",
@@ -72,6 +101,7 @@ describe("With some initial blogs in the database", () => {
 
       const response = await api
         .post("/api/blogs")
+        .set("Authorization", authToken)
         .send(newBlog)
         .expect(201)
         .expect("Content-Type", /^application\/json/);
@@ -86,7 +116,11 @@ describe("With some initial blogs in the database", () => {
         likes: 0,
       };
 
-      await api.post("/api/blogs").send(newBlog).expect(400);
+      await api
+        .post("/api/blogs")
+        .set("Authorization", authToken)
+        .send(newBlog)
+        .expect(400);
 
       const blogsAtEnd = await helper.blogsInDb();
       assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length);
@@ -99,7 +133,11 @@ describe("With some initial blogs in the database", () => {
         likes: 0,
       };
 
-      await api.post("/api/blogs").send(newBlog).expect(400);
+      await api
+        .post("/api/blogs")
+        .set("Authorization", authToken)
+        .send(newBlog)
+        .expect(400);
 
       const blogsAtEnd = await helper.blogsInDb();
       assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length);
@@ -111,7 +149,10 @@ describe("With some initial blogs in the database", () => {
 
         const blogToDelete = blogsAtStart[0];
 
-        await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+        await api
+          .delete(`/api/blogs/${blogToDelete.id}`)
+          .set("Authorization", authToken)
+          .expect(204);
 
         const blogsAtEnd = await helper.blogsInDb();
         assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1);
@@ -125,7 +166,9 @@ describe("With some initial blogs in the database", () => {
 
         const nonExistingId = await helper.nonExistingId();
 
-        await api.delete(`/api/blogs/${nonExistingId}`).expect(204);
+        await api
+          .delete(`/api/blogs/${nonExistingId}`)
+          .set("Authorization", authToken);
 
         const blogsAtEnd = await helper.blogsInDb();
 
@@ -137,7 +180,10 @@ describe("With some initial blogs in the database", () => {
 
         const invalidId = "230948209348";
 
-        await api.delete(`/api/blogs/${invalidId}`).expect(400);
+        await api
+          .delete(`/api/blogs/${invalidId}`)
+          .set("Authorization", authToken)
+          .expect(400);
 
         const blogsAtEnd = await helper.blogsInDb();
         assert.strictEqual(blogsAtStart.length, blogsAtEnd.length);
@@ -200,7 +246,10 @@ describe("With some initial blogs in the database", () => {
           .send({})
           .expect(200)
           .expect("Content-Type", /^application\/json/);
-        assert.deepStrictEqual(response.body, blogToUpdate);
+        assert.strictEqual(response.body.title, blogToUpdate.title);
+        assert.strictEqual(response.body.author, blogToUpdate.author);
+        assert.strictEqual(response.body.url, blogToUpdate.url);
+        assert.strictEqual(response.body.likes, blogToUpdate.likes);
 
         const blogsAtEnd = await helper.blogsInDb();
         const updatedBlog = blogsAtEnd.find((b) => b.id === blogToUpdate.id);

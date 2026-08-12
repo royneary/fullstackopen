@@ -1,5 +1,18 @@
+const bcrypt = require("bcrypt");
 const Blog = require("../models/blog");
 const User = require("../models/user");
+
+const initialUser = {
+  username: "root",
+  name: "Superuser",
+  password: "verysecurepassword",
+};
+
+const initialDbUser = {
+  username: "root",
+  name: "Superuser",
+  passwordHash: bcrypt.hashSync(initialUser.password, 10),
+};
 
 const initialBlogs = [
   {
@@ -62,4 +75,11 @@ const nonExistingId = async () => {
   return newBlog.id;
 };
 
-module.exports = { initialBlogs, blogsInDb, usersInDb, nonExistingId };
+module.exports = {
+  initialBlogs,
+  initialUser,
+  initialDbUser,
+  blogsInDb,
+  usersInDb,
+  nonExistingId,
+};

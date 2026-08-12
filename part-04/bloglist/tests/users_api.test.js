@@ -1,7 +1,6 @@
 const { test, describe, after, beforeEach } = require("node:test");
 const assert = require("node:assert");
 const supertest = require("supertest");
-const bcrypt = require("bcrypt");
 const app = require("../app");
 const helper = require("./test_helper");
 const User = require("../models/user");
@@ -12,12 +11,8 @@ const api = supertest(app);
 describe("With one initial user in the database", () => {
   beforeEach(async () => {
     await User.deleteMany({});
-    const passwordHash = await bcrypt.hash("verysecurepassword", 10);
-    const user = new User({
-      username: "root",
-      name: "Superuser",
-      passwordHash,
-    });
+
+    const user = new User(helper.initialDbUser);
     await user.save();
   });
 
@@ -28,7 +23,7 @@ describe("With one initial user in the database", () => {
       .expect("Content-Type", /^application\/json/);
 
     assert.strictEqual(response.body.length, 1);
-    assert.strictEqual(response.body[0].username, "root");
+    assert.strictEqual(response.body[0].username, helper.initialUser.username);
   });
 
   describe("creating a user", () => {
@@ -50,14 +45,9 @@ describe("With one initial user in the database", () => {
     });
 
     test("fails if username already exists", async () => {
-      const newUser = {
-        username: "root",
-        name: "Super User",
-        password: "supersecurepassword",
-      };
       const response = await api
         .post("/api/users")
-        .send(newUser)
+        .send(helper.initialUser)
         .expect(400)
         .expect("Content-Type", /^application\/json/);
 
