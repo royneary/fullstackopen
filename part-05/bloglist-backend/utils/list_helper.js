@@ -1,7 +1,3 @@
-const dummy = (blogs) => {
-  return 1;
-};
-
 const totalLikes = (blogs) => {
   return blogs.reduce((acc, blog) => acc + blog.likes, 0);
 };
@@ -40,4 +36,4 @@ const mostLikes = (blogs) => {
   return { author, likes: totalLikes(authorBlogs) };
 };
 
-module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes };
+module.exports = { totalLikes, favoriteBlog, mostBlogs, mostLikes };
