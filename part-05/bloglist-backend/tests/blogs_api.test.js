@@ -203,6 +203,7 @@ describe("With some initial blogs in the database", () => {
         };
         const response = await api
           .put(`/api/blogs/${blogToUpdate.id}`)
+          .set("Authorization", authToken)
           .send(newBlog)
           .expect(200)
           .expect("Content-Type", /^application\/json/);
@@ -225,6 +226,7 @@ describe("With some initial blogs in the database", () => {
 
         const response = await api
           .put(`/api/blogs/${blogToUpdate.id}`)
+          .set("Authorization", authToken)
           .send({
             likes: 999,
           })
@@ -243,6 +245,7 @@ describe("With some initial blogs in the database", () => {
 
         const response = await api
           .put(`/api/blogs/${blogToUpdate.id}`)
+          .set("Authorization", authToken)
           .send({})
           .expect(200)
           .expect("Content-Type", /^application\/json/);
@@ -261,6 +264,7 @@ describe("With some initial blogs in the database", () => {
 
         await api
           .put(`/api/blog/${nonExistingId}`)
+          .set("Authorization", authToken)
           .send({ likes: 999 })
           .expect(404);
       });

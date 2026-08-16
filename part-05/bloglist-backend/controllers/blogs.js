@@ -1,6 +1,7 @@
 const blogsRouter = require("express").Router();
 const middleware = require("../utils/middleware");
 const Blog = require("../models/blog");
+const User = require("../models/user");
 
 blogsRouter.get("/", async (request, response) => {
   const blogs = await Blog.find({}).populate("user", { username: 1, name: 1 });
@@ -42,10 +43,13 @@ blogsRouter.delete(
   },
 );
 
-blogsRouter.put("/:id", async (request, response) => {
-  const { title, author, url, likes } = request.body;
+blogsRouter.put("/:id", middleware.userExtractor, async (request, response) => {
+  const { title, author, url, likes, user } = request.body;
 
-  let blog = await Blog.findById(request.params.id);
+  let blog = await Blog.findById(request.params.id).populate("user", {
+    username: 1,
+    name: 1,
+  });
 
   if (!blog) {
     return response.status(404).end();
@@ -56,8 +60,18 @@ blogsRouter.put("/:id", async (request, response) => {
   blog.url = url || blog.url;
   blog.likes = likes || blog.likes;
 
+  if (user) {
+    let newUser = await User.findById(user);
+
+    if (!newUser) {
+      return response.status(400).json({ error: "user not found" });
+    }
+    blog.user = newUser._id;
+  }
+
   const updatedBlog = await blog.save();
-  response.json(updatedBlog);
+  const result = await updatedBlog.populate("user", { username: 1, name: 1 });
+  response.json(result);
 });
 
 module.exports = blogsRouter;
