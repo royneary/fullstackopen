@@ -39,6 +39,10 @@ blogsRouter.delete(
     }
 
     await Blog.findByIdAndDelete(request.params.id);
+
+    user.blogs = user.blogs.filter((b) => b.toString() !== blog._id.toString());
+    await user.save();
+
     response.status(204).end();
   },
 );
@@ -46,19 +50,11 @@ blogsRouter.delete(
 blogsRouter.put("/:id", middleware.userExtractor, async (request, response) => {
   const { title, author, url, likes, user } = request.body;
 
-  let blog = await Blog.findById(request.params.id).populate("user", {
-    username: 1,
-    name: 1,
-  });
+  let blog = await Blog.findById(request.params.id);
 
   if (!blog) {
     return response.status(404).end();
   }
-
-  blog.title = title || blog.title;
-  blog.author = author || blog.author;
-  blog.url = url || blog.url;
-  blog.likes = likes || blog.likes;
 
   if (user) {
     let newUser = await User.findById(user);
@@ -66,8 +62,15 @@ blogsRouter.put("/:id", middleware.userExtractor, async (request, response) => {
     if (!newUser) {
       return response.status(400).json({ error: "user not found" });
     }
-    blog.user = newUser._id;
+    if (blog.user.toString() !== newUser._id.toString()) {
+      return response.status(400).json({ error: "user cannot be changed" });
+    }
   }
+
+  blog.title = title || blog.title;
+  blog.author = author || blog.author;
+  blog.url = url || blog.url;
+  blog.likes = likes || blog.likes;
 
   const updatedBlog = await blog.save();
   const result = await updatedBlog.populate("user", { username: 1, name: 1 });
