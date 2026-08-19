@@ -35,7 +35,13 @@
             vscode-langservers-extracted
             typescript-language-server
             prettierd
+            pkgs-unstable.playwright-driver.browsers
           ];
+
+          shellHook = ''
+            export PLAYWRIGHT_BROWSERS_PATH=${pkgs-unstable.playwright-driver.browsers}
+            export PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=true
+          '';
         }
       );
     };
