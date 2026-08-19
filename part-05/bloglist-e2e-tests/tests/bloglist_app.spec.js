@@ -1,5 +1,5 @@
 const { test, expect, beforeEach, describe } = require("@playwright/test");
-const { loginWith } = require("./helper");
+const { loginWith, createBlog } = require("./helper");
 
 describe("Blog app", () => {
   beforeEach(async ({ page, request }) => {
@@ -39,17 +39,38 @@ describe("Blog app", () => {
     });
 
     test("a new blog can be created", async ({ page }) => {
-      await page.getByRole("button", { name: "create new blog" }).click();
-      await page.getByLabel("title:").fill("Learning Web Development");
-      await page.getByLabel("author:").fill("Christian Ulrich");
-      await page
-        .getByLabel("url:")
-        .fill("https://christian.nerdsoli.de/webdev");
-      await page.getByRole("button", { name: "create" }).click();
+      await createBlog(
+        page,
+        "Learning Web Development",
+        "Christian Ulrich",
+        "https://christian.nerdsoli.de/webdev",
+      );
 
       await expect(
         page.getByText("Learning Web Development Christian Ulrich"),
       ).toBeVisible();
+    });
+
+    describe("When a blog exists", () => {
+      beforeEach(async ({ page }) => {
+        await createBlog(
+          page,
+          "Learning Web Development",
+          "Christian Ulrich",
+          "https://christian.nerdsoli.de/webdev",
+        );
+      });
+
+      test("the blog can be liked", async ({ page }) => {
+        const blogDiv = page.getByText(
+          "Learning Web Development Christian Ulrich",
+        );
+        await blogDiv.getByRole("button", { name: "view" }).click();
+
+        await expect(blogDiv.getByText("likes 0")).toBeVisible();
+        await blogDiv.getByRole("button", { name: "like" }).click();
+        await expect(blogDiv.getByText("likes 1")).toBeVisible();
+      });
     });
   });
 });
