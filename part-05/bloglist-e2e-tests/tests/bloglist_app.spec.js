@@ -122,5 +122,55 @@ describe("Blog app", () => {
         ).not.toBeVisible();
       });
     });
+
+    describe("When multiple blogs exist", () => {
+      beforeEach(async ({ page }) => {
+        await createBlog(
+          page,
+          "TestBlog1",
+          "Christian Ulrich",
+          "https://christian.nerdsoli.de/1",
+        );
+        await createBlog(
+          page,
+          "TestBlog2",
+          "Christian Ulrich",
+          "https://christian.nerdsoli.de/2",
+        );
+        await createBlog(
+          page,
+          "TestBlog3",
+          "Christian Ulrich",
+          "https://christian.nerdsoli.de/3",
+        );
+      });
+
+      test("the blogs are sorted by likes", async ({ page }) => {
+        const blog1 = page.getByText(/TestBlog1/);
+        const blog2 = page.getByText(/TestBlog2/);
+        const blog3 = page.getByText(/TestBlog3/);
+
+        await blog1.getByRole("button", { name: "view" }).click();
+        await blog2.getByRole("button", { name: "view" }).click();
+        await blog3.getByRole("button", { name: "view" }).click();
+
+        // TestBlog1 has 1 like
+        await blog1.getByRole("button", { name: "like" }).click();
+
+        // TestBlog2 has 3 likes
+        await blog2.getByRole("button", { name: "like" }).click();
+        await blog2.getByRole("button", { name: "like" }).click();
+        await blog2.getByRole("button", { name: "like" }).click();
+
+        // TestBlog3 has 2 likes
+        await blog3.getByRole("button", { name: "like" }).click();
+        await blog3.getByRole("button", { name: "like" }).click();
+
+        const blogs = await page.getByText(/^TestBlog/).all();
+        await expect(blogs[0].getByText(/TestBlog2/)).toBeVisible();
+        await expect(blogs[1].getByText(/TestBlog3/)).toBeVisible();
+        await expect(blogs[2].getByText(/TestBlog1/)).toBeVisible();
+      });
+    });
   });
 });
