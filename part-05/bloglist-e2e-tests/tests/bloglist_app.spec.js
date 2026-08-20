@@ -11,6 +11,13 @@ describe("Blog app", () => {
         password: "verysecurepassword",
       },
     });
+    await request.post("/api/users", {
+      data: {
+        name: "Superuser",
+        username: "root",
+        password: "verysecurepassword",
+      },
+    });
 
     await page.goto("/");
   });
@@ -70,6 +77,31 @@ describe("Blog app", () => {
         await expect(blogDiv.getByText("likes 0")).toBeVisible();
         await blogDiv.getByRole("button", { name: "like" }).click();
         await expect(blogDiv.getByText("likes 1")).toBeVisible();
+      });
+
+      test("the delete button is visible", async ({ page }) => {
+        const blogDiv = page.getByText(
+          "Learning Web Development Christian Ulrich",
+        );
+        await blogDiv.getByRole("button", { name: "view" }).click();
+
+        expect(blogDiv.getByRole("button", { name: "remove" })).toBeVisible();
+      });
+
+      test("the delete button is not visible when logged in as another user", async ({
+        page,
+      }) => {
+        await page.getByRole("button", { name: "logout" }).click();
+        await loginWith(page, "root", "verysecurepassword");
+
+        const blogDiv = page.getByText(
+          "Learning Web Development Christian Ulrich",
+        );
+        await blogDiv.getByRole("button", { name: "view" }).click();
+
+        expect(
+          blogDiv.getByRole("button", { name: "remove" }),
+        ).not.toBeVisible();
       });
 
       test("the blog can be deleted", async ({ page }) => {
