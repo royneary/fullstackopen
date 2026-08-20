@@ -61,7 +61,7 @@ describe("Blog app", () => {
         );
       });
 
-      test("the blog can be liked", async ({ page }) => {
+      test("it can be liked", async ({ page }) => {
         const blogDiv = page.getByText(
           "Learning Web Development Christian Ulrich",
         );
@@ -70,6 +70,19 @@ describe("Blog app", () => {
         await expect(blogDiv.getByText("likes 0")).toBeVisible();
         await blogDiv.getByRole("button", { name: "like" }).click();
         await expect(blogDiv.getByText("likes 1")).toBeVisible();
+      });
+
+      test("it can be deleted by the user who created it", async ({ page }) => {
+        const blogDiv = page.getByText(
+          "Learning Web Development Christian Ulrich",
+        );
+        await blogDiv.getByRole("button", { name: "view" }).click();
+
+        page.on("dialog", (dialog) => dialog.accept());
+        await blogDiv.getByRole("button", { name: "remove" }).click();
+        expect(
+          page.getByText("Learning Web Development Christian Ulrich"),
+        ).not.toBeVisible();
       });
     });
   });
