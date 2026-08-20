@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Routes, Route, Link, useNavigate, useMatch } from "react-router-dom";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
@@ -13,8 +13,6 @@ const App = () => {
   const [notification, setNotification] = useState(null);
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
-
-  const createBlogFormRef = useRef();
 
   const navigate = useNavigate();
 
@@ -62,12 +60,12 @@ const App = () => {
 
   const handleCreate = async (blog) => {
     try {
-      createBlogFormRef.current.toggleVisibility();
       const createdBlog = await blogService.create(blog);
       setBlogs(blogs.concat(createdBlog));
       showInfo(
         `a new blog ${createdBlog.title} by ${createdBlog.author} added`,
       );
+      navigate("/");
     } catch {
       showError("failed to create a new blog");
     }
@@ -94,6 +92,7 @@ const App = () => {
       await blogService.remove(blog.id);
       setBlogs(blogs.filter((b) => b.id !== blog.id));
       showInfo(`blog ${blog.title} by ${blog.author} deleted`);
+      navigate("/");
     } catch {
       showError("failed to delete blog");
     }
@@ -109,6 +108,11 @@ const App = () => {
         <Link style={padding} to="/">
           blogs
         </Link>
+        {user !== null ? (
+          <Link style={padding} to="/create">
+            new blog
+          </Link>
+        ) : null}
         {user === null ? (
           <Link style={padding} to="/login">
             login
@@ -121,6 +125,10 @@ const App = () => {
 
       <Routes>
         <Route path="/" element={<BlogList blogs={blogs} />} />
+        <Route
+          path="/create"
+          element={<CreateBlogForm onCreate={handleCreate} />}
+        />
         <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
         <Route
           path={"/blogs/:id"}
