@@ -85,7 +85,9 @@ describe("Blog app", () => {
         );
         await blogDiv.getByRole("button", { name: "view" }).click();
 
-        expect(blogDiv.getByRole("button", { name: "remove" })).toBeVisible();
+        await expect(
+          blogDiv.getByRole("button", { name: "remove" }),
+        ).toBeVisible();
       });
 
       test("the delete button is not visible when logged in as another user", async ({
@@ -99,7 +101,7 @@ describe("Blog app", () => {
         );
         await blogDiv.getByRole("button", { name: "view" }).click();
 
-        expect(
+        await expect(
           blogDiv.getByRole("button", { name: "remove" }),
         ).not.toBeVisible();
       });
@@ -112,10 +114,10 @@ describe("Blog app", () => {
 
         page.on("dialog", (dialog) => dialog.accept());
         await blogDiv.getByRole("button", { name: "remove" }).click();
-        page
+        await page
           .getByText("Learning Web Development by Christian Ulrich deleted")
           .waitFor();
-        expect(
+        await expect(
           page.getByText("Learning Web Development Christian Ulrich"),
         ).not.toBeVisible();
       });
