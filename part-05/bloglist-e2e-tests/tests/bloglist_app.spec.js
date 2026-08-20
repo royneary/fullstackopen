@@ -146,9 +146,9 @@ describe("Blog app", () => {
       });
 
       test("the blogs are sorted by likes", async ({ page }) => {
-        const blog1 = page.getByText(/TestBlog1/);
-        const blog2 = page.getByText(/TestBlog2/);
-        const blog3 = page.getByText(/TestBlog3/);
+        const blog1 = page.getByText(/^TestBlog1/);
+        const blog2 = page.getByText(/^TestBlog2/);
+        const blog3 = page.getByText(/^TestBlog3/);
 
         await blog1.getByRole("button", { name: "view" }).click();
         await blog2.getByRole("button", { name: "view" }).click();
@@ -167,9 +167,9 @@ describe("Blog app", () => {
         await blog3.getByRole("button", { name: "like" }).click();
 
         const blogs = await page.getByText(/^TestBlog/).all();
-        await expect(blogs[0].getByText(/TestBlog2/)).toBeVisible();
-        await expect(blogs[1].getByText(/TestBlog3/)).toBeVisible();
-        await expect(blogs[2].getByText(/TestBlog1/)).toBeVisible();
+        await expect(blogs[0].getByText(/^TestBlog2/)).toBeVisible();
+        await expect(blogs[1].getByText(/^TestBlog3/)).toBeVisible();
+        await expect(blogs[2].getByText(/^TestBlog1/)).toBeVisible();
       });
     });
   });
