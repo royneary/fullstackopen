@@ -1,40 +1,27 @@
-import { useState } from "react";
+const Blog = ({ blog, user, onLike, onDelete }) => {
+  if (!blog) {
+    return null;
+  }
 
-const Blog = ({ blog, onLike, onDelete }) => {
-  const [visible, setVisible] = useState(false);
+  const authorized = user !== null && user.username === blog.user.username;
 
-  const buttonLabel = visible ? "hide" : "view";
+  const likeButton = <button onClick={() => onLike(blog)}>like</button>;
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: "solid",
-    borderWidth: 1,
-    marginBottom: 5,
-  };
-
-  const removeButtonStyle = {
-    backgroundColor: "#4286f6",
-  };
+  const deleteButton = <button onClick={() => onDelete(blog)}>remove</button>;
 
   return (
-    <div style={blogStyle}>
-      {blog.title} {blog.author}{" "}
-      <button onClick={() => setVisible(!visible)}>{buttonLabel}</button>
-      {visible ? (
-        <div>
-          <div>{blog.url}</div>
-          <div>
-            likes {blog.likes} <button onClick={() => onLike()}>like</button>
-          </div>
-          <div>{blog.user.name}</div>
-          {onDelete ? (
-            <button style={removeButtonStyle} onClick={() => onDelete()}>
-              remove
-            </button>
-          ) : null}
-        </div>
-      ) : null}
+    <div>
+      <h2>
+        {blog.author}: {blog.title}
+      </h2>
+      <div>
+        <a href={blog.url}>{blog.url}</a>
+      </div>
+      <div>
+        likes {blog.likes} {authorized ? likeButton : null}
+      </div>
+      <div>Added by {blog.author}</div>
+      {authorized ? deleteButton : null}
     </div>
   );
 };

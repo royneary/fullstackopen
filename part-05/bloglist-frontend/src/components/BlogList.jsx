@@ -1,23 +1,21 @@
+import { Link } from "react-router-dom";
 import Blog from "./Blog";
 
-const BlogList = ({ blogs, user, onLike, onDelete }) => {
+const BlogList = ({ blogs }) => {
   return (
     <div>
       <h2>blogs</h2>
-      {blogs
-        .sort((b1, b2) => b2.likes - b1.likes)
-        .map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            onLike={() => onLike(blog)}
-            onDelete={
-              user !== null && user.username === blog.user.username
-                ? () => onDelete(blog)
-                : null
-            }
-          />
-        ))}
+      <ul>
+        {blogs
+          .sort((b1, b2) => b2.likes - b1.likes)
+          .map((blog) => (
+            <li key={blog.id}>
+              <Link to={`/blogs/${blog.id}`}>
+                {blog.title} by {blog.author}
+              </Link>
+            </li>
+          ))}
+      </ul>
     </div>
   );
 };
