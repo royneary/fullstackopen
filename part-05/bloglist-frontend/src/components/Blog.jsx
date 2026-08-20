@@ -1,3 +1,11 @@
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Typography,
+} from "@mui/material";
+
 const Blog = ({ blog, user, onLike, onDelete }) => {
   if (!blog) {
     return null;
@@ -5,24 +13,44 @@ const Blog = ({ blog, user, onLike, onDelete }) => {
 
   const isCreator = user && user.username === blog.user.username;
 
-  const likeButton = <button onClick={() => onLike(blog)}>like</button>;
+  const likeButton = (
+    <Button variant="outlined" onClick={() => onLike(blog)}>
+      like
+    </Button>
+  );
 
-  const deleteButton = <button onClick={() => onDelete(blog)}>remove</button>;
+  const deleteButton = (
+    <Button variant="outlined" color="error" onClick={() => onDelete(blog)}>
+      remove
+    </Button>
+  );
+
+  const styles = {
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.5em",
+  };
 
   return (
-    <div>
-      <h2>
-        {blog.author}: {blog.title}
-      </h2>
-      <div>
-        <a href={blog.url}>{blog.url}</a>
-      </div>
-      <div>
-        likes {blog.likes} {user ? likeButton : null}
-      </div>
-      <div>Added by {blog.author}</div>
-      {isCreator ? deleteButton : null}
-    </div>
+    <Card>
+      <CardContent sx={styles}>
+        <Typography variant="h5">{blog.title}</Typography>
+        <Typography variant="h6" sx={{ color: "text.secondary" }}>
+          by {blog.author}
+        </Typography>
+        <Typography variant="body1" sx={{ color: "text.secondary" }}>
+          <a href={blog.url}>{blog.url}</a>
+        </Typography>
+        <Typography variant="body1" sx={{ color: "text.secondary" }}>
+          Added by {blog.author}
+        </Typography>
+      </CardContent>
+      <CardActions sx={{ padding: "1em" }}>
+        <Typography>{blog.likes} likes</Typography>
+        {user ? likeButton : null}
+        {isCreator ? deleteButton : null}
+      </CardActions>
+    </Card>
   );
 };
 

@@ -85,9 +85,9 @@ describe("Blog app", () => {
           })
           .click();
 
-        await expect(page.getByText("likes 0")).toBeVisible();
+        await expect(page.getByText("0 likes")).toBeVisible();
         await page.getByRole("button", { name: "like" }).click();
-        await expect(page.getByText("likes 1")).toBeVisible();
+        await expect(page.getByText("1 likes")).toBeVisible();
       });
 
       test("the blog can be deleted", async ({ page }) => {

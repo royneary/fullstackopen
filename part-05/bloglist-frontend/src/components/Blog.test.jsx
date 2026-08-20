@@ -26,9 +26,10 @@ const user2 = {
 test("to unauthenticated users, blog info and likes are displayed, buttons are not displayed", () => {
   render(<Blog blog={blog} onLike={() => {}} onDelete={() => {}} />);
 
-  expect(screen.getByText(`${blog.author}: ${blog.title}`)).toBeVisible();
+  expect(screen.getByText(`${blog.title}`)).toBeVisible();
+  expect(screen.getByText(`by ${blog.author}`)).toBeVisible();
   expect(screen.getByText(blog.url)).toBeVisible();
-  expect(screen.getByText(`likes ${blog.likes}`)).toBeVisible();
+  expect(screen.getByText(`${blog.likes} likes`)).toBeVisible();
   expect(screen.getByText(`Added by ${blog.author}`)).toBeVisible();
 
   expect(screen.queryByRole("button", { name: "like" }) === null);

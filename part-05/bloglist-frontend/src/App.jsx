@@ -99,6 +99,12 @@ const App = () => {
     }
   };
 
+  const containerStyles = {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1em",
+  };
+
   const buttonStyles = {
     "&:hover": { bgcolor: "rgba(255,255,255,0.3)" },
   };
@@ -108,7 +114,7 @@ const App = () => {
   };
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="lg" sx={containerStyles}>
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" sx={typographyStyles}>
