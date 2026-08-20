@@ -3,7 +3,7 @@ const Blog = ({ blog, user, onLike, onDelete }) => {
     return null;
   }
 
-  const authorized = user !== null && user.username === blog.user.username;
+  const isCreator = user && user.username === blog.user.username;
 
   const likeButton = <button onClick={() => onLike(blog)}>like</button>;
 
@@ -18,10 +18,10 @@ const Blog = ({ blog, user, onLike, onDelete }) => {
         <a href={blog.url}>{blog.url}</a>
       </div>
       <div>
-        likes {blog.likes} {authorized ? likeButton : null}
+        likes {blog.likes} {user ? likeButton : null}
       </div>
       <div>Added by {blog.author}</div>
-      {authorized ? deleteButton : null}
+      {isCreator ? deleteButton : null}
     </div>
   );
 };

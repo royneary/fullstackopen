@@ -13,49 +13,54 @@ const blog = {
   },
 };
 
-test("by default only title and author are shown, not URL or likes", () => {
+const user1 = {
+  name: "Superuser",
+  username: "root",
+};
+
+const user2 = {
+  name: "Christian Ulrich",
+  username: "christian",
+};
+
+test("to unauthenticated users, blog info and likes are displayed, buttons are not displayed", () => {
   render(<Blog blog={blog} onLike={() => {}} onDelete={() => {}} />);
 
-  const titleElement = screen.getByText(blog.title, { exact: false });
-  const authorElement = screen.getByText(blog.author, { exact: false });
+  expect(screen.getByText(`${blog.author}: ${blog.title}`)).toBeVisible();
+  expect(screen.getByText(blog.url)).toBeVisible();
+  expect(screen.getByText(`likes ${blog.likes}`)).toBeVisible();
+  expect(screen.getByText(`Added by ${blog.author}`)).toBeVisible();
 
-  expect(titleElement).toBeVisible();
-  expect(authorElement).toBeVisible();
-
-  const urlElement = screen.queryByText(blog.url, { exact: false });
-  const likesElement = screen.queryByText(`likes ${blog.likes}`, {
-    exact: false,
-  });
-
-  expect(urlElement).toBeNull();
-  expect(likesElement).toBeNull();
+  expect(screen.queryByRole("button", { name: "like" }) === null);
+  expect(screen.queryByRole("button", { name: "remove" }) === null);
 });
 
-test("URL and likes are shown after 'view' has been clicked", async () => {
-  render(<Blog blog={blog} onLike={() => {}} onDelete={() => {}} />);
+test("to authenticated users who are not the blog's creator, only the like button is displayed", () => {
+  render(
+    <Blog blog={blog} user={user2} onLike={() => {}} onDelete={() => {}} />,
+  );
 
-  const viewButton = screen.getByText("view");
-  const user = userEvent.setup();
-  await user.click(viewButton);
+  expect(screen.getByRole("button", { name: "like" })).toBeVisible();
+  expect(screen.queryByRole("button", { name: "remove" }) === null);
+});
 
-  const urlElement = screen.getByText(blog.url, { exact: false });
-  const likesElement = screen.getByText(`likes ${blog.likes}`, {
-    exact: false,
-  });
+test("to the blog's creator, the delete button is displayed", () => {
+  render(
+    <Blog blog={blog} user={user1} onLike={() => {}} onDelete={() => {}} />,
+  );
 
-  expect(urlElement).toBeVisible();
-  expect(likesElement).toBeVisible();
+  expect(screen.getByRole("button", { name: "like" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "remove" })).toBeVisible();
 });
 
 test("when clicking the like button, twice, onLike is called twice", async () => {
   const handleLike = vi.fn();
 
-  render(<Blog blog={blog} onLike={handleLike} onDelete={() => {}} />);
+  render(
+    <Blog blog={blog} user={user1} onLike={handleLike} onDelete={() => {}} />,
+  );
 
   const user = userEvent.setup();
-
-  const viewButton = screen.getByText("view");
-  await user.click(viewButton);
 
   const likeButton = screen.getByText("like");
   await user.click(likeButton);
