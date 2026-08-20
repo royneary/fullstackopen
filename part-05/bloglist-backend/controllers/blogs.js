@@ -11,6 +11,7 @@ blogsRouter.get("/", async (request, response) => {
 blogsRouter.post("/", middleware.userExtractor, async (request, response) => {
   const user = request.user;
 
+  console.log("creating blog, user: ", user);
   const blog = new Blog({ ...request.body, user: user._id });
   const savedBlog = await blog.save();
   const result = await savedBlog.populate("user", { username: 1, name: 1 });

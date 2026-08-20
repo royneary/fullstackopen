@@ -3,6 +3,14 @@ const User = require("../models/user");
 
 const logger = require("./logger");
 
+const requestLogger = (request, response, next) => {
+  console.log("Method:", request.method);
+  console.log("Path:  ", request.path);
+  console.log("Body:  ", request.body);
+  console.log("---");
+  next();
+};
+
 const tokenExtractor = (request, response, next) => {
   const authorization = request.get("authorization");
   if (authorization && authorization.startsWith("Bearer ")) {
@@ -60,6 +68,7 @@ const unknownEndpoint = (request, response) => {
 };
 
 module.exports = {
+  requestLogger,
   tokenExtractor,
   userExtractor,
   errorHandler,

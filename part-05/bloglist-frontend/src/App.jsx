@@ -118,7 +118,7 @@ const App = () => {
             login
           </Link>
         ) : (
-          <button onClick={handleLogout}>Logout</button>
+          <button onClick={handleLogout}>logout</button>
         )}
       </div>
       <Notification notification={notification} />
