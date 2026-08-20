@@ -1,3 +1,4 @@
+import { Button, TextField } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -18,31 +19,33 @@ const LoginForm = ({ onLogin }) => {
     navigate("/");
   };
 
+  const formStyles = {
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.6em",
+    maxWidth: "500px",
+  };
+
   return (
     <div>
       <h2>Log in to application</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>
-            username
-            <input
-              type="text"
-              value={username}
-              onChange={({ target }) => setUsername(target.value)}
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            password
-            <input
-              type="password"
-              value={password}
-              onChange={({ target }) => setPassword(target.value)}
-            />
-          </label>
-        </div>
-        <button type="submit">login</button>
+      <form onSubmit={handleSubmit} style={formStyles}>
+        <TextField
+          label="username"
+          value={username}
+          onChange={({ target }) => setUsername(target.value)}
+          variant="standard"
+        />
+        <TextField
+          label="password"
+          value={password}
+          onChange={({ target }) => setPassword(target.value)}
+          type="password"
+          variant="standard"
+        />
+        <Button type="submit" variant="contained">
+          login
+        </Button>
       </form>
     </div>
   );

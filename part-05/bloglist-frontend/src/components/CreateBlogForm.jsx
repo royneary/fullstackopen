@@ -1,3 +1,4 @@
+import { Button, TextField } from "@mui/material";
 import { useState } from "react";
 
 const CreateBlogForm = ({ onCreate }) => {
@@ -15,41 +16,39 @@ const CreateBlogForm = ({ onCreate }) => {
     setUrl("");
   };
 
+  const formStyles = {
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.6em",
+    maxWidth: "500px",
+  };
+
   return (
     <div>
       <h2>create new</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>
-            title:
-            <input
-              type="text"
-              value={title}
-              onChange={({ target }) => setTitle(target.value)}
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            author:
-            <input
-              type="text"
-              value={author}
-              onChange={({ target }) => setAuthor(target.value)}
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            url:
-            <input
-              type="url"
-              value={url}
-              onChange={({ target }) => setUrl(target.value)}
-            />
-          </label>
-        </div>
-        <button type="submit">create</button>
+      <form onSubmit={handleSubmit} style={formStyles}>
+        <TextField
+          label="title"
+          value={title}
+          onChange={({ target }) => setTitle(target.value)}
+          variant="outlined"
+        />
+        <TextField
+          label="author"
+          value={author}
+          onChange={({ target }) => setAuthor(target.value)}
+          variant="outlined"
+        />
+        <TextField
+          label="url"
+          value={url}
+          type="url"
+          onChange={({ target }) => setUrl(target.value)}
+          variant="outlined"
+        />
+        <Button type="submit" variant="contained">
+          create
+        </Button>
       </form>
     </div>
   );

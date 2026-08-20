@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Routes, Route, Link, useNavigate, useMatch } from "react-router-dom";
+import { AppBar, Button, Container, Toolbar, Typography } from "@mui/material";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import Blog from "./components/Blog";
@@ -32,14 +33,14 @@ const App = () => {
     }
   }, []);
 
-  const showNotification = (message, className) => {
-    setNotification({ message, className });
+  const showNotification = (message, severity) => {
+    setNotification({ message, severity });
     setTimeout(() => {
       setNotification(null);
     }, 5000);
   };
   const showError = (message) => showNotification(message, "error");
-  const showInfo = (message) => showNotification(message, "info");
+  const showSuccess = (message) => showNotification(message, "success");
 
   const handleLogin = async (credentials) => {
     try {
@@ -62,7 +63,7 @@ const App = () => {
     try {
       const createdBlog = await blogService.create(blog);
       setBlogs(blogs.concat(createdBlog));
-      showInfo(
+      showSuccess(
         `a new blog ${createdBlog.title} by ${createdBlog.author} added`,
       );
       navigate("/");
@@ -91,36 +92,57 @@ const App = () => {
       }
       await blogService.remove(blog.id);
       setBlogs(blogs.filter((b) => b.id !== blog.id));
-      showInfo(`blog ${blog.title} by ${blog.author} deleted`);
+      showSuccess(`blog ${blog.title} by ${blog.author} deleted`);
       navigate("/");
     } catch {
       showError("failed to delete blog");
     }
   };
 
-  const padding = {
-    padding: 5,
+  const buttonStyles = {
+    "&:hover": { bgcolor: "rgba(255,255,255,0.3)" },
+  };
+
+  const typographyStyles = {
+    flexGrow: 1,
   };
 
   return (
-    <div>
-      <div>
-        <Link style={padding} to="/">
-          blogs
-        </Link>
-        {user !== null ? (
-          <Link style={padding} to="/create">
-            new blog
-          </Link>
-        ) : null}
-        {user === null ? (
-          <Link style={padding} to="/login">
-            login
-          </Link>
-        ) : (
-          <button onClick={handleLogout}>logout</button>
-        )}
-      </div>
+    <Container maxWidth="lg">
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" sx={typographyStyles}>
+            Blog App
+          </Typography>
+          <Button color="inherit" component={Link} to="/" sx={buttonStyles}>
+            blogs
+          </Button>
+          {user !== null ? (
+            <Button
+              color="inherit"
+              component={Link}
+              to="/create"
+              sx={buttonStyles}
+            >
+              new blog
+            </Button>
+          ) : null}
+          {user === null ? (
+            <Button
+              color="inherit"
+              component={Link}
+              to="/login"
+              sx={buttonStyles}
+            >
+              login
+            </Button>
+          ) : (
+            <Button color="inherit" onClick={handleLogout} sx={buttonStyles}>
+              logout
+            </Button>
+          )}
+        </Toolbar>
+      </AppBar>
       <Notification notification={notification} />
 
       <Routes>
@@ -142,7 +164,7 @@ const App = () => {
           }
         />
       </Routes>
-    </div>
+    </Container>
   );
 };
 

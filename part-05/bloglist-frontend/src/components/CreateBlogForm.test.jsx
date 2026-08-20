@@ -8,9 +8,9 @@ test("onCreate is called with the correct data", async () => {
   render(<CreateBlogForm onCreate={handleCreate} />);
 
   const user = userEvent.setup();
-  const titleInput = screen.getByLabelText("title:");
-  const authorInput = screen.getByLabelText("author:");
-  const urlInput = screen.getByLabelText("url:");
+  const titleInput = screen.getByLabelText("title");
+  const authorInput = screen.getByLabelText("author");
+  const urlInput = screen.getByLabelText("url");
   const createButton = screen.getByText("create");
 
   await user.type(titleInput, "TypeScript is not that bad");
