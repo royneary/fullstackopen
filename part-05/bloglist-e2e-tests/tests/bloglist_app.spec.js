@@ -61,7 +61,7 @@ describe("Blog app", () => {
         );
       });
 
-      test("it can be liked", async ({ page }) => {
+      test("the blog can be liked", async ({ page }) => {
         const blogDiv = page.getByText(
           "Learning Web Development Christian Ulrich",
         );
@@ -72,7 +72,7 @@ describe("Blog app", () => {
         await expect(blogDiv.getByText("likes 1")).toBeVisible();
       });
 
-      test("it can be deleted by the user who created it", async ({ page }) => {
+      test("the blog can be deleted", async ({ page }) => {
         const blogDiv = page.getByText(
           "Learning Web Development Christian Ulrich",
         );
@@ -80,6 +80,9 @@ describe("Blog app", () => {
 
         page.on("dialog", (dialog) => dialog.accept());
         await blogDiv.getByRole("button", { name: "remove" }).click();
+        page
+          .getByText("Learning Web Development by Christian Ulrich deleted")
+          .waitFor();
         expect(
           page.getByText("Learning Web Development Christian Ulrich"),
         ).not.toBeVisible();
