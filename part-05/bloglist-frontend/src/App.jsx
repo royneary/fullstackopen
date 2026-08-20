@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from "react";
-import Blog from "./components/Blog";
+import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+import Blog from "./components/Blog";
 import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm";
 import CreateBlogForm from "./components/CreateBlogForm";
 import Togglable from "./components/Togglable";
+import BlogList from "./components/BlogList";
 
 const App = () => {
   const [notification, setNotification] = useState(null);
@@ -13,6 +15,8 @@ const App = () => {
   const [user, setUser] = useState(null);
 
   const createBlogFormRef = useRef();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -50,6 +54,7 @@ const App = () => {
   const handleLogout = () => {
     window.localStorage.removeItem("user");
     setUser(null);
+    navigate("/");
   };
 
   const handleCreate = async (blog) => {
@@ -91,43 +96,40 @@ const App = () => {
     }
   };
 
-  if (user === null) {
-    return (
-      <div>
-        <h2>Log in to application</h2>
-        <Notification notification={notification} />
-        <LoginForm onLogin={handleLogin} />
-      </div>
-    );
-  }
+  const padding = {
+    padding: 5,
+  };
 
   return (
     <div>
-      <h2>blogs</h2>
+      <div>
+        <Link style={padding} to="/">
+          blogs
+        </Link>
+        {user === null ? (
+          <Link style={padding} to="/login">
+            login
+          </Link>
+        ) : (
+          <button onClick={handleLogout}>Logout</button>
+        )}
+      </div>
       <Notification notification={notification} />
-      <p>
-        {user.name} logged in <button onClick={handleLogout}>logout</button>
-      </p>
 
-      <Togglable buttonLabel="create new blog" ref={createBlogFormRef}>
-        <h2>create new</h2>
-        <CreateBlogForm onCreate={handleCreate} />
-      </Togglable>
-
-      {blogs
-        .sort((b1, b2) => b2.likes - b1.likes)
-        .map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            onLike={() => handleLike(blog)}
-            onDelete={
-              blog.user.username === user.username
-                ? () => handleDelete(blog)
-                : null
-            }
-          />
-        ))}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <BlogList
+              blogs={blogs}
+              user={user}
+              onLike={handleLike}
+              onDelete={handleDelete}
+            />
+          }
+        />
+        <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
+      </Routes>
     </div>
   );
 };
