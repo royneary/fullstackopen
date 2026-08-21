@@ -21,6 +21,7 @@ const compareByVotes = (a1, a2) => a2.votes - a1.votes;
 
 const useAnecdoteStore = create((set) => ({
   anecdotes: anecdotesAtStart.map(asObject),
+  filter: "",
   actions: {
     vote: (id) =>
       set((state) => ({
@@ -34,9 +35,19 @@ const useAnecdoteStore = create((set) => ({
           .concat({ id: getId(), content, votes })
           .toSorted(compareByVotes),
       })),
+    setFilter: (filter) => set((state) => ({ filter })),
   },
 }));
 
-export const useAnecdotes = () => useAnecdoteStore((state) => state.anecdotes);
+export const useAnecdotes = () => {
+  const anecdotes = useAnecdoteStore((state) => state.anecdotes);
+  const filter = useAnecdoteStore((state) => state.filter);
+  return anecdotes.filter((a) =>
+    a.content.toLowerCase().includes(filter.toLowerCase()),
+  );
+};
+
+export const useFilter = () => useAnecdoteStore((state) => state.filter);
+
 export const useAnecdoteActions = () =>
   useAnecdoteStore((state) => state.actions);
