@@ -5,7 +5,7 @@ const getId = () => (100000 * Math.random()).toFixed(0);
 
 const compareByVotes = (a1, a2) => a2.votes - a1.votes;
 
-const useAnecdoteStore = create((set) => ({
+const useAnecdoteStore = create((set, get) => ({
   anecdotes: [],
   filter: "",
   actions: {
@@ -14,12 +14,18 @@ const useAnecdoteStore = create((set) => ({
       set(() => ({ anecdotes }));
     },
 
-    vote: (id) =>
+    vote: async (id) => {
+      const anecdote = get().anecdotes.find((a) => a.id === id);
+      const updated = await anecdotesService.update(id, {
+        ...anecdote,
+        votes: anecdote.votes + 1,
+      });
       set((state) => ({
         anecdotes: state.anecdotes
-          .map((a) => (a.id === id ? { ...a, votes: a.votes + 1 } : a))
+          .map((a) => (a.id === id ? updated : a))
           .toSorted(compareByVotes),
-      })),
+      }));
+    },
 
     add: async ({ content, votes }) => {
       const newAnecdote = await anecdotesService.create({ content, votes });
