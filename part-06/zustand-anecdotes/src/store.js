@@ -17,18 +17,22 @@ const asObject = (anecdote) => ({
   votes: 0,
 });
 
+const compareByVotes = (a1, a2) => a2.votes - a1.votes;
+
 const useAnecdoteStore = create((set) => ({
   anecdotes: anecdotesAtStart.map(asObject),
   actions: {
     vote: (id) =>
       set((state) => ({
-        anecdotes: state.anecdotes.map((a) =>
-          a.id === id ? { ...a, votes: a.votes + 1 } : a,
-        ),
+        anecdotes: state.anecdotes
+          .map((a) => (a.id === id ? { ...a, votes: a.votes + 1 } : a))
+          .toSorted(compareByVotes),
       })),
     add: ({ content, votes }) =>
       set((state) => ({
-        anecdotes: state.anecdotes.concat({ id: getId(), content, votes }),
+        anecdotes: state.anecdotes
+          .concat({ id: getId(), content, votes })
+          .toSorted(compareByVotes),
       })),
   },
 }));
