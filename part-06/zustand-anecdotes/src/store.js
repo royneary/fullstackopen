@@ -3,12 +3,6 @@ import anecdotesService from "./services/anecdotes";
 
 const getId = () => (100000 * Math.random()).toFixed(0);
 
-const asObject = (anecdote) => ({
-  content: anecdote,
-  id: getId(),
-  votes: 0,
-});
-
 const compareByVotes = (a1, a2) => a2.votes - a1.votes;
 
 const useAnecdoteStore = create((set) => ({
@@ -27,12 +21,12 @@ const useAnecdoteStore = create((set) => ({
           .toSorted(compareByVotes),
       })),
 
-    add: ({ content, votes }) =>
+    add: async ({ content, votes }) => {
+      const newAnecdote = await anecdotesService.create({ content, votes });
       set((state) => ({
-        anecdotes: state.anecdotes
-          .concat({ id: getId(), content, votes })
-          .toSorted(compareByVotes),
-      })),
+        anecdotes: state.anecdotes.concat(newAnecdote).toSorted(compareByVotes),
+      }));
+    },
 
     setFilter: (filter) => set(() => ({ filter })),
   },
