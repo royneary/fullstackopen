@@ -1,12 +1,14 @@
-import { useAnecdoteActions } from "../store";
+import { useAnecdoteActions, useNotificationActions } from "../store";
 
 const AnecdoteForm = () => {
   const { add } = useAnecdoteActions();
+  const { showNotification } = useNotificationActions();
 
   const handleCreate = async (e) => {
     e.preventDefault();
     const content = e.target.anecdote.value;
     add({ content, votes: 0 });
+    showNotification(`You created '${content}'`);
     e.target.reset();
   };
 

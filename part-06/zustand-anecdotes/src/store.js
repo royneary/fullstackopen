@@ -1,10 +1,6 @@
 import { create } from "zustand";
 import anecdotesService from "./services/anecdotes";
 
-const getId = () => (100000 * Math.random()).toFixed(0);
-
-const compareByVotes = (a1, a2) => a2.votes - a1.votes;
-
 const useAnecdoteStore = create((set, get) => ({
   anecdotes: [],
   filter: "",
@@ -21,16 +17,14 @@ const useAnecdoteStore = create((set, get) => ({
         votes: anecdote.votes + 1,
       });
       set((state) => ({
-        anecdotes: state.anecdotes
-          .map((a) => (a.id === id ? updated : a))
-          .toSorted(compareByVotes),
+        anecdotes: state.anecdotes.map((a) => (a.id === id ? updated : a)),
       }));
     },
 
     add: async ({ content, votes }) => {
       const newAnecdote = await anecdotesService.create({ content, votes });
       set((state) => ({
-        anecdotes: state.anecdotes.concat(newAnecdote).toSorted(compareByVotes),
+        anecdotes: state.anecdotes.concat(newAnecdote),
       }));
     },
 
@@ -38,15 +32,31 @@ const useAnecdoteStore = create((set, get) => ({
   },
 }));
 
+const useNotificationStore = create((set) => ({
+  notification: null,
+  actions: {
+    showNotification: (notification) => {
+      set(() => ({ notification }));
+      setTimeout(() => {
+        set(() => ({ notification: null }));
+      }, 5000);
+    },
+  },
+}));
+
 export const useAnecdotes = () => {
   const anecdotes = useAnecdoteStore((state) => state.anecdotes);
   const filter = useAnecdoteStore((state) => state.filter);
-  return anecdotes.filter((a) =>
-    a.content.toLowerCase().includes(filter.toLowerCase()),
-  );
+  return anecdotes
+    .filter((a) => a.content.toLowerCase().includes(filter.toLowerCase()))
+    .toSorted((a1, a2) => a2.votes - a1.votes);
 };
 
 export const useFilter = () => useAnecdoteStore((state) => state.filter);
+export const useNotification = () =>
+  useNotificationStore((state) => state.notification);
 
 export const useAnecdoteActions = () =>
   useAnecdoteStore((state) => state.actions);
+export const useNotificationActions = () =>
+  useNotificationStore((state) => state.actions);
