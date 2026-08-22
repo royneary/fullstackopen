@@ -1,12 +1,11 @@
 import useNotify from "../hooks/useNotify";
 
 const AnecdoteList = ({ anecdotes, onVote }) => {
-  const { setNotification } = useNotify();
+  const { notify } = useNotify();
 
   const handleVote = (anecdote) => {
     onVote(anecdote);
-    setNotification(`anecdote '${anecdote.content}' voted`);
-    setTimeout(() => setNotification(null), 5000);
+    notify(`anecdote '${anecdote.content}' voted`);
   };
 
   return (

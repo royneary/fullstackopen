@@ -3,7 +3,7 @@ import { createAnecdote, getAnecdotes, updateAnecdote } from "../requests";
 import useNotify from "./useNotify";
 
 export const useAnecdotes = () => {
-  const { setNotification } = useNotify();
+  const { notify } = useNotify();
   const queryClient = useQueryClient();
 
   const result = useQuery({
@@ -17,8 +17,7 @@ export const useAnecdotes = () => {
       queryClient.invalidateQueries({ queryKeys: ["notes"] });
     },
     onError: (error) => {
-      setNotification(error.message);
-      setTimeout(() => setNotification(null), 5000);
+      notify(error.message);
     },
   });
 
@@ -28,8 +27,7 @@ export const useAnecdotes = () => {
       queryClient.invalidateQueries({ queryKeys: ["notes"] });
     },
     onError: (error) => {
-      setNotification(error.message);
-      setTimeout(() => setNotification(null), 5000);
+      notify(error.message);
     },
   });
 

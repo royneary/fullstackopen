@@ -2,7 +2,7 @@ import { useAnecdotes } from "../hooks/useAnecdotes";
 import useNotify from "../hooks/useNotify";
 
 const AnecdoteForm = () => {
-  const { setNotification } = useNotify();
+  const { notify } = useNotify();
   const { createAnecdote } = useAnecdotes();
 
   const onCreate = (event) => {
@@ -10,8 +10,7 @@ const AnecdoteForm = () => {
     const content = event.target.anecdote.value;
     createAnecdote(content);
     event.target.reset();
-    setNotification(`anecdote '${content}' created`);
-    setTimeout(() => setNotification(null), 5000);
+    notify(`anecdote '${content}' created`);
   };
 
   return (
