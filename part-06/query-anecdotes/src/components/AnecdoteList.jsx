@@ -1,8 +1,7 @@
-import { useContext } from "react";
-import AnecdoteContext from "../AnecdoteContext";
+import useNotify from "../hooks/useNotify";
 
 const AnecdoteList = ({ anecdotes, onVote }) => {
-  const { setNotification } = useContext(AnecdoteContext);
+  const { setNotification } = useNotify();
 
   const handleVote = (anecdote) => {
     onVote(anecdote);
