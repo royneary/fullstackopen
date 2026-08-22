@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import AnecdoteContext from "../AnecdoteContext";
+import NotificationContext from "../NotificationContext";
 
-const useNotify = () => useContext(AnecdoteContext);
+const useNotify = () => useContext(NotificationContext);
 
 export default useNotify;

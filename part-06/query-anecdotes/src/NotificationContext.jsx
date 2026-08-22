@@ -1,10 +1,10 @@
 import { createContext, useState } from "react";
 
-const AnecdoteContext = createContext();
+const NotificationContext = createContext();
 
-export default AnecdoteContext;
+export default NotificationContext;
 
-export const AnecdoteContextProvider = (props) => {
+export const NotificationContextProvider = (props) => {
   const [notification, setNotification] = useState(null);
 
   const notify = (message) => {
@@ -13,8 +13,8 @@ export const AnecdoteContextProvider = (props) => {
   };
 
   return (
-    <AnecdoteContext.Provider value={{ notification, notify }}>
+    <NotificationContext.Provider value={{ notification, notify }}>
       {props.children}
-    </AnecdoteContext.Provider>
+    </NotificationContext.Provider>
   );
 };
