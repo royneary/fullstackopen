@@ -59,3 +59,23 @@ test("anecdotes are returned sorted by votes", async () => {
 
   expect(result.current.map((a) => a.votes)).toEqual([15, 4, 3]);
 });
+
+test("anecdotes are filtered correctly", () => {
+  useAnecdoteStore.setState({ anecdotes });
+
+  const { result: actionsResult } = renderHook(() => useAnecdoteActions());
+
+  act(() => {
+    actionsResult.current.setFilter("Software");
+  });
+
+  const { result } = renderHook(() => useAnecdotes());
+
+  expect(result.current).toEqual([
+    {
+      content: "Adding manpower to a late software project makes it later!",
+      id: "21149",
+      votes: 15,
+    },
+  ]);
+});
